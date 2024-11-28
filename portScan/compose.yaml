@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  attacker:
+    # build:
+    #   context: ./attacker
+    #   dockerfile: Dockerfile
+    image: oka49132/portscan-tutorial-attacker:latest
+    container_name: attacker
+    networks:
+      security_network:
+        ipv4_address: 172.16.238.10
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    ports:
+      - "8888:80"  # Apache
+    stdin_open: true
+    tty: true
+
+  target:
+    # build:
+    #   context: ./target
+    #   dockerfile: Dockerfile
+    image: oka49132/portscan-tutorial-target:latest
+    container_name: target
+    networks:
+      security_network:
+        ipv4_address: 172.16.238.20
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    ports:
+      - "8080:80"  # Apache
+      - "2222:22"  # SSH
+    stdin_open: true
+    tty: true
+
+networks:
+  security_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.238.0/24
